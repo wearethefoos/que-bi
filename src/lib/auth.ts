@@ -34,6 +34,6 @@ export const requireAuth = async () => {
   const redirectTo = headersList.get("x-pathname") || "/";
 
   if (!session) {
-    await signIn({ redirectTo });
+    await signIn("google", { redirectTo });
   }
 };

@@ -9,7 +9,7 @@ export function SignIn({ redirectTo }: Props) {
     <form
       action={async () => {
         "use server";
-        await signIn({ redirectTo });
+        await signIn("google", { redirectTo });
       }}
     >
       <button

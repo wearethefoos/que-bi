@@ -20,7 +20,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session: Session = await auth();
+  const session: Session | null = await auth();
   const headersList = headers();
   const redirectTo = headersList.get("x-pathname") || "/";
 

@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ¿Que? - A Simple BI Tool
 
-## Getting Started
+Que is a simple BI tool to share queries with your team.
 
-First, run the development server:
+Click the button below to deploy your own instance of Que:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fwearethefoos%2Fque-bi&env=GOOGLE_DOMAIN,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,POSTGRES_PRISMA_URL,POSTGRES_URL_NON_POOLING,READ_DATABASE_URL,NEXTAUTH_SECRET,NEXTAUTH_URL)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Que uses the following environment variables:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- `GOOGLE_DOMAIN` - The domain of your Google Workspace account (e.g. `example.com`).
+- `GOOGLE_CLIENT_ID` - The client ID of your Google OAuth app (see below).
+- `GOOGLE_CLIENT_SECRET` - The client secret of your Google OAuth app.
+- `POSTGRES_PRISMA_URL` - The URL of your Prisma database (to store your Que queries and auth info of the users using Que).
+- `POSTGRES_URL_NON_POOLING` - The URL of your Prisma database without pooling.
+- `READ_DATABASE_URL` - The URL of your read-only database (where your queries are run).
+- `NEXTAUTH_SECRET` - The secret for NextAuth.
+- `NEXTAUTH_URL` - The URL of your Vercel deployment (e.g. `https://que-bi.vercel.app`).
 
-## Learn More
+### Google OAuth
 
-To learn more about Next.js, take a look at the following resources:
+To get the `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, you need to create a new project in the [Google Developers Console](https://console.developers.google.com/). Then, create a new OAuth 2.0 client ID and set the redirect URI to `https://<YOUR VERCEL URL>/api/auth/callback/google`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+For details, see the [NextAuth documentation](https://authjs.dev/getting-started/providers/google).

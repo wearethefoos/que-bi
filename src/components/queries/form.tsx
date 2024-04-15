@@ -75,7 +75,7 @@ export const QueryForm: FC<Props> = (props) => {
       <div className="flex flex-col mt-8">
         <label className="text-lg font-bold">Query Name</label>
         <input
-          className="border border-gray-300 rounded-md p-2 mt-2"
+          className="border border-gray-200 dark:bg-gray-800 dark:border-gray-800 rounded-md p-2 mt-1"
           {...register("name", { required: true })}
         />
         {errors.name && (
@@ -93,7 +93,7 @@ export const QueryForm: FC<Props> = (props) => {
       <div className="flex flex-col mt-8">
         <label className="text-lg font-bold">Description</label>
         <textarea
-          className="border border-gray-300 rounded-md p-2 mt-2 h-64"
+          className="border border-gray-200 dark:bg-gray-800 dark:border-gray-800 rounded-md p-2 mt-1 h-64"
           {...register("description")}
         />
       </div>

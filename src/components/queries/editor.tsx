@@ -3,6 +3,7 @@
 import CodeMirror, { ViewUpdate } from "@uiw/react-codemirror";
 import { PostgreSQL } from "@codemirror/lang-sql";
 import { forwardRef, useCallback } from "react";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 type Props = {
   value: string;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 const Editor = forwardRef((props: Props, _ref) => {
+  const darkMode = useDarkMode();
   const { value, setValue } = props;
 
   const onChange = useCallback(
@@ -20,7 +22,12 @@ const Editor = forwardRef((props: Props, _ref) => {
   );
 
   return (
-    <CodeMirror value={value} extensions={[PostgreSQL]} onChange={onChange} />
+    <CodeMirror
+      theme={darkMode ? "dark" : "light"}
+      value={value}
+      extensions={[PostgreSQL]}
+      onChange={onChange}
+    />
   );
 });
 

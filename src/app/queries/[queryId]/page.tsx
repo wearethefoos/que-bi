@@ -14,6 +14,22 @@ type Params = {
   searchParams?: URLSearchParams;
 };
 
+export const generateMetadata = async ({ params: { queryId } }: Params) => {
+  const query = await prisma.query.findUnique({
+    where: { id: queryId },
+  });
+  requireAuth();
+
+  if (!query) {
+    notFound();
+  }
+
+  return {
+    title: query.name,
+    description: query.description,
+  };
+};
+
 export default async function ShowQuery({
   params: { queryId },
   searchParams,
@@ -50,14 +66,47 @@ export default async function ShowQuery({
           <QueryForm {...query} />
         </div>
       )}
+
       {result.success && (
-        <DataTable
-          data={{
-            count: result.result?.rowCount || 0,
-            fields: result.result?.fields || [],
-            rows: result.result?.rows || [],
-          }}
-        />
+        <>
+          <h3 className="text-xl mt-4">{result.result?.rowCount} Rows </h3>
+          {query.query?.match(/\slimit\s/i) && (
+            <p className="text-yellow-700">
+              Query contains limit, there may be more results when you adjust
+              the limit.
+            </p>
+          )}
+
+          {result.result?.rowCount === 0 && (
+            <div className="bg-yellow-400/30 p-4 rounded-md my-8">
+              <h3 className="text-xl text-yellow-700 dark:text-yellow-400">
+                No Results
+              </h3>
+              <p className="text-yellow-700 dark:text-yellow-400">
+                The query returned no results.
+              </p>
+              <p className="mt-4">
+                <Link
+                  href={`/queries/${queryId}/edit`}
+                  className="px-4 py-2 bg-blue-800 text-white rounded-md"
+                >
+                  Edit Query
+                </Link>
+              </p>
+            </div>
+          )}
+
+          {result.result?.rowCount !== 0 && (
+            <DataTable
+              id={queryId}
+              data={{
+                count: result.result?.rowCount || 0,
+                fields: Object.keys(result.result?.rows?.[0] || {}),
+                rows: result.result?.rows || [],
+              }}
+            />
+          )}
+        </>
       )}
     </main>
   );

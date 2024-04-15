@@ -1,11 +1,12 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Editor from "./editor";
 import { useForm, SubmitHandler } from "react-hook-form";
 import request from "axios";
 import { Query } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Props = Partial<Query>;
 
@@ -23,6 +24,20 @@ export const QueryForm: FC<Props> = (props) => {
       query,
     },
   });
+
+  useEffect(() => {
+    if (props.id && setValue) {
+      request
+        .get(`/api/queries/${props.id}`)
+        .then((res) => {
+          setValue("query", res.data.query);
+          setQuery(res.data.query);
+        })
+        .catch((err) => {
+          console.error("error", err);
+        });
+    }
+  }, [props.id, setValue]);
 
   const updateQuery = (value: string) => {
     setValue("query", value);
@@ -86,7 +101,8 @@ export const QueryForm: FC<Props> = (props) => {
     <label className="text-lg font-bold">Tags</label>
     <input className="border border-gray-300 rounded-md p-2 mt-2" />
   </div> */}
-      <div className="flex flex-col mt-8 items-center">
+      <div className="flex flex-row mt-8 items-center gap-4 justify-end">
+        {props.id && <Link href={`/queries/${props.id}`}>Cancel</Link>}
         <button className="bg-blue-500 text-white rounded-md p-2 mt-2">
           Save
         </button>

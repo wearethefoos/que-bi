@@ -27,9 +27,9 @@ export const GET = async (
     return Response.json({ message: "Query not found" }, { status: 404 });
   }
 
-  const result = await runQuery({ query: query.query, params: queryParams });
+  const run = await runQuery({ query: query.query, params: queryParams });
 
-  return Response.json({ ...query, result });
+  return Response.json({ ...query, run });
 };
 
 export const PUT = async (

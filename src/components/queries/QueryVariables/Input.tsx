@@ -22,11 +22,13 @@ export const QueryVariableInput = forwardRef<any, QueryVariable>(
     const select = options && options.length > 0;
 
     return (
-      <div className="flex flex-col">
-        <label className="text-sm font-semibold text-gray-600">{name}</label>
+      <div className="flex flex-col mt-2">
+        <label className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+          {name}
+        </label>
         {select ? (
           <select
-            className="border border-gray-300 rounded-md p-2 mt-1"
+            className="border border-gray-200 dark:bg-gray-600 dark:border-gray-800 rounded-md p-2 mt-1"
             onChange={(e) => {
               const stub = { target: { value: e.target.value } };
               props.onChange?.(stub as any);
@@ -43,7 +45,7 @@ export const QueryVariableInput = forwardRef<any, QueryVariable>(
           <input
             ref={ref}
             type={inputType}
-            className="border border-gray-300 rounded-md p-2 mt-1"
+            className="border border-gray-200 dark:bg-gray-600 dark:border-gray-800 rounded-md p-2 mt-1"
             defaultValue={value}
             {...props}
           />

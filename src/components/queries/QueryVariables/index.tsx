@@ -32,7 +32,7 @@ const QueryVariables: FC<Props> = ({ id }) => {
   return (
     <div
       className={classNames(
-        "bg-neutral-200 p-4 rounded-md my-8",
+        "bg-gray-200 dark:bg-gray-800 p-4 rounded-md my-8",
         loading && "animate-pulse",
       )}
     >

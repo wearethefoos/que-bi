@@ -5,6 +5,7 @@ import { DeleteButton } from "./DeleteButton";
 import { useEffect, useState } from "react";
 import { Query } from "@prisma/client";
 import request from "axios";
+import { useRouter } from "next/navigation";
 
 type Props = {
   queries: Query[];
@@ -12,6 +13,7 @@ type Props = {
 
 export const QueriesOverview = ({ queries: queriesFromServer }: Props) => {
   const [queries, setQueries] = useState(queriesFromServer);
+  const router = useRouter();
 
   useEffect(() => {
     request.get("/api/queries").then((response) => {
@@ -37,7 +39,10 @@ export const QueriesOverview = ({ queries: queriesFromServer }: Props) => {
             key={query.id}
             className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            <td className="px-6 py-4 cursor-pointer">
+            <td
+              className="px-6 py-4 cursor-pointer"
+              onClick={() => router.push(`/queries/${query.id}`)}
+            >
               <Link href={`/queries/${query.id}`}>{query.name}</Link>
             </td>
             <td className="px-6 py-4">

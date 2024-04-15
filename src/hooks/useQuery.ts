@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import request from "axios";
 
 import type { DatabaseError, QueryResult } from "pg";
 import { Query } from "@prisma/client";
 import { useRouter, useSearchParams } from "next/navigation";
+import { QueryContext } from "@/contexts/queryContext";
 
 export type QueryWithResult = {
   run?: {
@@ -16,67 +17,92 @@ export type QueryWithResult = {
 } & Query;
 
 export const useQuery = (id: string) => {
-  const [queryId, setQueryId] = useState<string | null>(id);
-  const [query, setQuery] = useState<QueryWithResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-  const params = useSearchParams();
-  const [orderBy, setOrderBy] = useState<string | null>(
-    params.get("orderBy") || null,
-  );
-  const [order, setOrder] = useState<"asc" | "desc">(
-    params.get("order") === "desc" ? "desc" : "asc",
-  );
-
-  const sortQueryBy = (property: string) => {
-    if (!query || !query.run || !query.run.result) return;
-
-    setOrderBy(property);
-    let newParams = new URLSearchParams(window.location.search);
-    newParams.set("orderBy", property);
-
-    const newOrder = orderBy === property && order === "desc" ? "asc" : "desc";
-    setOrder(newOrder);
-    newParams.set("order", newOrder);
-
-    setQuery({
-      ...query,
-      run: {
-        ...query.run,
-        result: {
-          ...query.run.result,
-          rows:
-            newOrder === "desc"
-              ? query.run.result?.rows.sort((a, b) =>
-                  b[property] < a[property] ? -1 : 1,
-                ) || []
-              : query.run.result?.rows.sort((a, b) =>
-                  a[property] < b[property] ? -1 : 1,
-                ) || [],
-        },
-      },
-    });
-
-    router.replace(`${window.location.pathname}?${newParams.toString()}`);
-  };
+  const {
+    queryId,
+    setQueryId,
+    query,
+    setQuery,
+    loading,
+    setLoading,
+    error,
+    setError,
+    params,
+    setParams,
+    orderBy,
+    setOrderBy,
+    order,
+    setOrder,
+  } = useContext(QueryContext);
 
   useEffect(() => {
+    setLoading(true);
     setError(null);
-    setQuery(null);
+
+    console.log("params changed?", params.toString(), queryId);
 
     if (!queryId) return;
 
     request
-      .get<QueryWithResult>(`/api/queries/${queryId}`)
+      .get<QueryWithResult>(`/api/queries/${queryId}?${params.toString()}`)
       .then((res) => {
-        setQuery(res.data);
+        console.log("success", res.data);
+        setQuery({ ...res.data });
         setError(res.data.error?.message || null);
       })
       .catch((err) => {
+        console.log("error");
         setQuery(null);
         setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, [queryId]);
+  }, [queryId, params, setQuery, setError, setLoading]);
 
-  return { query, order, orderBy, setQueryId, error, sortQueryBy };
+  const sortQueryBy = useCallback(
+    (property: string) => {
+      if (!query || !query.run || !query.run.result) return;
+
+      setOrderBy(property);
+      let newParams = new URLSearchParams(params);
+      newParams.set("orderBy", property);
+
+      const newOrder =
+        orderBy === property && order === "desc" ? "asc" : "desc";
+      setOrder(newOrder);
+      newParams.set("order", newOrder);
+
+      setQuery({
+        ...query,
+        run: {
+          ...query.run,
+          result: {
+            ...query.run.result,
+            rows:
+              newOrder === "desc"
+                ? query.run.result?.rows.sort((a, b) =>
+                    b[property] < a[property] ? -1 : 1,
+                  ) || []
+                : query.run.result?.rows.sort((a, b) =>
+                    a[property] < b[property] ? -1 : 1,
+                  ) || [],
+          },
+        },
+      });
+
+      setParams(newParams);
+    },
+    [query, params, orderBy, order, setQuery, setParams, setOrder, setOrderBy],
+  );
+
+  return {
+    query,
+    order,
+    orderBy,
+    setQueryId,
+    error,
+    loading,
+    sortQueryBy,
+    setParams,
+  };
 };

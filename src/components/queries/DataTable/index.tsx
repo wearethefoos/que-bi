@@ -3,18 +3,14 @@
 import { FC } from "react";
 import { ArrowUpIcon, ArrowDownIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@/hooks/useQuery";
+import classnames from "classnames";
 
 export type Props = {
   id: string;
-  data: {
-    fields: string[];
-    rows: any[];
-    count: number;
-  };
 };
 
-export const DataTable: FC<Props> = ({ id, data: { rows, fields } }) => {
-  const { query, sortQueryBy, order, orderBy } = useQuery(id);
+export const DataTable: FC<Props> = ({ id }) => {
+  const { query, sortQueryBy, order, orderBy, loading } = useQuery(id);
 
   const renderValue = (v: any) => {
     return (
@@ -26,12 +22,26 @@ export const DataTable: FC<Props> = ({ id, data: { rows, fields } }) => {
     );
   };
 
+  console.log("loading", loading);
+  console.log("query", query);
+
+  const result = query?.run?.result;
+
+  if (!result) {
+    return null;
+  }
+
   return (
-    <table className="my-24 table-fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <table
+      className={classnames(
+        "my-24 table-fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400",
+        loading && "animate-pulse",
+      )}
+    >
       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
-          {query?.run?.result?.fields.map((field) => (
-            <th scope="col" className="px-6 py-3" key={field.columnID}>
+          {result.fields.map((field) => (
+            <th scope="col" className="px-6 py-3" key={field.name}>
               <button onClick={() => sortQueryBy(field.name)}>
                 {field.name}
               </button>
@@ -47,7 +57,7 @@ export const DataTable: FC<Props> = ({ id, data: { rows, fields } }) => {
         </tr>
       </thead>
       <tbody>
-        {query?.run?.result?.rows.map((row, i) => (
+        {result.rows.map((row, i) => (
           <tr
             key={i}
             className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"

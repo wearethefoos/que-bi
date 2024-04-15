@@ -2,32 +2,44 @@
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { queryArgumentsAndValues } from "@/lib/queries/variables";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { FC } from "react";
 import QueryVariableInput from "./Input";
-import { useDebouncedCallback } from "use-debounce";
+import { useQuery } from "@/hooks/useQuery";
+import classNames from "classnames";
 
 type Props = {
-  query: string;
-  params?: URLSearchParams;
+  id: string;
 };
 
-const QueryVariables: FC<Props> = ({ query, params }) => {
-  const router = useRouter();
-  const { register, handleSubmit, setValue } = useForm<any>();
+const QueryVariables: FC<Props> = ({ id }) => {
+  const { query, setParams, loading } = useQuery(id);
+  const params = useSearchParams();
+  const { register, handleSubmit, setValue, getValues } = useForm<any>();
 
   const onSubmit: SubmitHandler<any> = (data) => {
-    console.log(data);
-    const url = new URL(window.location.pathname, window.location.origin);
-    router.push(`${url.pathname}?${new URLSearchParams(data).toString()}`);
+    setParams(new URLSearchParams(data));
   };
 
+  if (!query) {
+    return null;
+  }
+
+  for (const key of params.keys()) {
+    setValue(key, params.get(key));
+  }
+
   return (
-    <div className="bg-neutral-200 p-4 rounded-md my-8">
+    <div
+      className={classNames(
+        "bg-neutral-200 p-4 rounded-md my-8",
+        loading && "animate-pulse",
+      )}
+    >
       <form onSubmit={handleSubmit(onSubmit)}>
         <h3 className="text-xl">Arguments</h3>
         {queryArgumentsAndValues({
-          query,
+          query: query.query,
           params,
         }).map((arg) => {
           const [value, type] = arg.value.split("::");

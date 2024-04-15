@@ -25,8 +25,6 @@ export const runQuery = async (params: QueryParams) => {
 };
 
 const parsedQueryAndValues = ({ query, params }: QueryParams) => {
-  console.log("params", params);
-
   const queryArguments = query.match(VARIABLES_PATTERN_G);
   if (!queryArguments) return query;
 
@@ -38,7 +36,7 @@ const parsedQueryAndValues = ({ query, params }: QueryParams) => {
       const [m, , type, name, , opts] = ms;
       parsedQuery = parsedQuery.replace(
         m,
-        argumentValue(name, type, opts, params),
+        argumentValue(name, type, opts, new URLSearchParams(params)),
       );
     }
   });

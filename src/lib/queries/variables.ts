@@ -40,10 +40,14 @@ export const argumentValue = (
   name: string,
   type: string,
   opts: string,
-  params: any,
+  params?: URLSearchParams,
 ): string => {
   if (!name) return "";
-  return escape(params[name], type, opts) || defaultArgumentValue(type, opts);
+
+  return (
+    escape(params?.get(name) || undefined, type, opts) ||
+    defaultArgumentValue(type, opts)
+  );
 };
 
 const defaultArgumentValue = (type: string, opts: string): string => {
@@ -63,7 +67,11 @@ export const argumentValueOptions = (
   return options[1].split(",");
 };
 
-const escape = (value: string, type: string, opts: string): string => {
+const escape = (
+  value: string | undefined,
+  type: string,
+  opts: string,
+): string => {
   if (!value || value === "undefined") return defaultArgumentValue(type, opts);
   switch (type) {
     case "INT":

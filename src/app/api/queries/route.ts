@@ -33,6 +33,7 @@ export const GET = async (req: NextRequest) => {
   const queries = await prisma.query.findMany({
     take: parseInt(limit),
     skip: parseInt(offset),
+    orderBy: { name: "asc" },
     where: search
       ? {
           OR: [

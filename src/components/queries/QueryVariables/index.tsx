@@ -15,7 +15,7 @@ type Props = {
 const QueryVariables: FC<Props> = ({ id }) => {
   const { query, setParams, loading } = useQuery(id);
   const params = useSearchParams();
-  const { register, handleSubmit, setValue, getValues } = useForm<any>();
+  const { register, handleSubmit, setValue } = useForm<any>();
 
   const onSubmit: SubmitHandler<any> = (data) => {
     setParams(new URLSearchParams(data));

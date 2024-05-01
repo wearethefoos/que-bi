@@ -1,6 +1,5 @@
 "use client";
-
-import prisma from "@/lib/prisma";
+import request from "axios";
 
 type Props = {
   id: string;
@@ -12,11 +11,13 @@ export const DeleteButton = ({ id }: Props) => {
       return;
     }
 
-    await prisma.query.delete({
-      where: {
-        id,
-      },
-    });
+    try {
+      await request.delete(`/api/queries/${id}`);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete query, please try again.");
+    }
   };
 
   return (

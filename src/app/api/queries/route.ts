@@ -31,14 +31,15 @@ export const GET = async (req: NextRequest) => {
   const offset = params.get("offset") || "0";
 
   const queries = await prisma.query.findMany({
-    take: parseInt(limit),
-    skip: parseInt(offset),
+    take: Math.min(parseInt(limit), 100),
+    skip: Math.max(parseInt(offset), 0),
     orderBy: { name: "asc" },
     where: search
       ? {
           OR: [
-            { name: { startsWith: search } },
-            { description: { contains: search } },
+            { name: { startsWith: search, mode: "insensitive" } },
+            { name: { contains: search, mode: "insensitive" } },
+            { description: { contains: search, mode: "insensitive" } },
           ],
         }
       : undefined,

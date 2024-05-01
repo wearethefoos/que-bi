@@ -18,7 +18,7 @@ export default async function Queries({ searchParams }: Params) {
   const page = parseInt(searchParams.page || "1");
 
   const queries = await prisma.query.findMany({
-    take: limit,
+    take: Math.min(limit, 100),
     skip: Math.max(0, page - 1) * limit,
     orderBy: {
       name: "asc",
@@ -36,7 +36,7 @@ export default async function Queries({ searchParams }: Params) {
           New Query
         </Link>
       </div>
-      <QueriesOverview queries={queries} />
+      <QueriesOverview queries={queries} {...{ page, limit }} />
     </main>
   );
 }
